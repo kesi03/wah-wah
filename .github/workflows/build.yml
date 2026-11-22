@@ -1,0 +1,45 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Zig 0.13.0
+        shell: bash
+        run: |
+          curl -fsSLo zig.tar.xz https://ziglang.org/download/0.13.0/zig-linux-x86_64-0.13.0.tar.xz
+          tar -xf zig.tar.xz
+          echo "$GITHUB_WORKSPACE/zig-linux-x86_64-0.13.0" >> "$GITHUB_PATH"
+
+      - name: Fetch Vibe SDK
+        shell: bash
+        run: sh scripts/fetch-sdk.sh
+
+      - name: Build firmware
+        shell: bash
+        run: sh sdk/tools/build.sh ../firmware/wah-wah
+
+      - name: Validate firmware
+        shell: bash
+        run: node sdk/tools/vibe-check.mjs sdk/build/wah-wah.wasm --manifest firmware/wah-wah/firmware.json --seconds 5
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wah-wah
+          path: |
+            sdk/build/wah-wah.zip
+            sdk/build/wah-wah.wasm

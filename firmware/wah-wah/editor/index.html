@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VIBE FM - Automatic Funk Effects</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --espresso:#140d0a; --brown:#241812; --brown2:#35231a; --line:#5a3a26;
+    --orange:#ff8c1a; --gold:#f2c14e; --avo:#8fa44b; --cream:#f3e5c8;
+    --fg:#fff3dc; --muted:#b39478; --dim:#7d6149; --green:#9bcb63; --red:#d95b3f;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:18px; background:var(--espresso); color:var(--fg);
+         font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;
+         background-image:repeating-linear-gradient(0deg,transparent 0 42px,rgba(255,140,26,.025) 42px 43px); }
+  .hero { display:flex; align-items:center; gap:18px; padding:16px 18px; border:2px solid var(--orange);
+          border-radius:14px; background:linear-gradient(115deg,var(--brown) 0%,#3a2014 60%,#2b1a10 100%);
+          position:relative; overflow:hidden; }
+  .hero:after { content:""; position:absolute; right:-40px; top:-70px; width:220px; height:220px;
+                border-radius:50%; border:16px solid rgba(242,193,78,.12); }
+  .afro { width:96px; height:96px; flex:none; filter:drop-shadow(0 3px 0 rgba(0,0,0,.35)); }
+  .brand { flex:1; min-width:0; }
+  .kicker { font-size:10px; letter-spacing:.34em; color:var(--gold); text-transform:uppercase; }
+  h1 { margin:2px 0 0; font-size:clamp(30px,6vw,54px); line-height:.95; letter-spacing:.02em;
+       color:var(--orange); text-shadow:2px 2px 0 #6b2f0c; }
+  .brand p { margin:6px 0 0; font-size:11px; letter-spacing:.22em; color:var(--cream); text-transform:uppercase; }
+  .badge { flex:none; border:2px dashed var(--gold); border-radius:50%; width:88px; height:88px;
+           display:grid; place-content:center; text-align:center; color:var(--gold);
+           font-size:10px; font-weight:800; letter-spacing:.12em; line-height:1.3; transform:rotate(-9deg); }
+  .statusbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:10px 0 16px;
+               padding:8px 12px; border-radius:8px; background:var(--brown); border:1px solid var(--line); }
+  #status { flex:1; min-width:180px; color:var(--gold); font-variant-numeric:tabular-nums; font-size:12px; }
+  .pill { padding:3px 9px; border-radius:999px; background:rgba(143,164,75,.18); color:var(--green);
+          font-size:10px; letter-spacing:.14em; text-transform:uppercase; border:1px solid rgba(155,203,99,.35); }
+  h2 { margin:0 0 10px; font-size:13px; letter-spacing:.2em; text-transform:uppercase; color:var(--orange);
+       display:flex; align-items:baseline; gap:10px; }
+  h2 small { font-size:10px; letter-spacing:.1em; color:var(--muted); text-transform:none; }
+  .panel { border:1px solid var(--line); border-radius:12px; padding:14px; margin:0 0 14px;
+           background:linear-gradient(180deg,var(--brown2),var(--brown)); box-shadow:0 6px 18px rgba(0,0,0,.25); }
+  .two { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:8px 16px; }
+  .ctl { display:grid; grid-template-columns:minmax(96px,1fr) minmax(80px,1.1fr) 66px;
+         align-items:center; gap:8px; }
+  .ctl label { font-size:11px; letter-spacing:.06em; color:var(--muted); }
+  .ctl output { text-align:right; color:var(--cream); font-size:11px; font-variant-numeric:tabular-nums; }
+  input[type=range] { width:100%; accent-color:var(--orange); height:18px; }
+  select, button, input[type=text] { font:inherit; padding:6px 9px; border-radius:6px;
+    border:1px solid var(--line); background:var(--espresso); color:var(--fg); }
+  select { width:100%; }
+  button { cursor:pointer; border-color:var(--orange); color:var(--orange); font-weight:700;
+           font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
+  button:hover { background:var(--orange); color:var(--espresso); }
+  button.hot { border-color:var(--gold); color:var(--gold); }
+  button.hot:hover { background:var(--gold); color:var(--espresso); }
+  button:active { transform:translateY(1px); }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; }
+
+  /* the two self-driving mechanisms get their own little animation */
+  .viz { position:relative; height:76px; border-radius:8px; overflow:hidden; margin:2px 0 12px;
+         background:linear-gradient(90deg,#1c110c,#3a2113,#1c110c); border:1px solid var(--line); }
+  .viz:after { content:""; position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(90deg,transparent 0 39px,rgba(255,243,220,.06) 39px 40px); }
+  .track { position:absolute; left:8%; right:8%; top:38px; height:6px; border-radius:3px;
+           background:rgba(255,243,220,.14); }
+  .needle { position:absolute; left:var(--wah-pos,50%); top:20px; width:6px; height:42px;
+            border-radius:3px; background:var(--gold); box-shadow:0 0 12px var(--gold);
+            transform:translateX(-50%); transition:left .09s linear; }
+  .vizlabel { position:absolute; left:12px; top:8px; font-size:10px; letter-spacing:.2em; color:var(--muted); }
+  .vizval { position:absolute; right:12px; top:6px; font-size:16px; font-weight:800; color:var(--gold);
+            font-variant-numeric:tabular-nums; }
+  .rotorwrap { display:flex; align-items:center; gap:18px; }
+  .rotor { width:74px; height:74px; flex:none; position:relative; border-radius:50%;
+           border:3px solid var(--gold); background:radial-gradient(circle,#4a2a16,#1a100b); }
+  .blade { position:absolute; left:50%; top:50%; width:5px; height:30px; margin-left:-2.5px;
+           background:linear-gradient(var(--orange),var(--gold)); transform-origin:50% 0;
+           animation:spin var(--rotor-time,2s) linear infinite; }
+  .blade.b2 { transform:rotate(180deg); animation:spin2 var(--rotor-time,2s) linear infinite; }
+  .cap { position:absolute; left:50%; top:50%; width:12px; height:12px; margin:-6px;
+         border-radius:50%; background:var(--cream); }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes spin2 { to { transform:rotate(540deg); } }
+  .rotor-text { flex:1; font-size:11px; color:var(--muted); }
+  .rotor-text b { display:block; font-size:20px; color:var(--gold); font-variant-numeric:tabular-nums; }
+  .presets { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; }
+  .presets button { padding:12px 8px; font-size:12px; }
+  .note { margin:10px 0 0; color:var(--muted); font-size:11px; }
+  .note b { color:var(--cream); }
+  .stripes { height:8px; border-radius:4px; margin:16px 0;
+    background:linear-gradient(90deg,var(--orange) 0 33%,var(--gold) 33% 66%,var(--avo) 66% 100%); }
+  footer { padding:12px 4px 24px; color:var(--dim); font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <svg class="afro" viewBox="0 0 120 120" aria-label="afro logo">
+    <g id="curls"></g>
+    <circle cx="60" cy="70" r="27" fill="#f3e5c8"/>
+    <circle cx="51" cy="67" r="2.6" fill="#140d0a"/>
+    <circle cx="69" cy="67" r="2.6" fill="#140d0a"/>
+    <path d="M50 79 Q60 87 70 79" fill="none" stroke="#6b3a1c" stroke-width="2.4" stroke-linecap="round"/>
+  </svg>
+  <div class="brand">
+    <div class="kicker">Automatic funk effects</div>
+    <h1>VIBE·FM</h1>
+    <p>Wah wah &nbsp;·&nbsp; Leslie &nbsp;·&nbsp; all the funky stuff</p>
+  </div>
+  <div class="badge">NO PEDAL<br>REQUIRED</div>
+</header>
+
+<div class="statusbar">
+  <span id="status">waking up the rig…</span>
+  <span class="pill">IN 1 → FX → OUT</span>
+  <span class="pill" id="riff-pill">demo riff off</span>
+</div>
+
+<div class="two">
+  <section class="panel">
+    <h2>A · Auto wah <small>it drives itself</small></h2>
+    <div class="viz">
+      <span class="vizlabel" id="wah-mode-label">SWEEP</span><span class="vizval" id="wah-hz">— Hz</span>
+      <div class="track"></div><div class="needle" id="needle"></div>
+    </div>
+    <div class="grid" id="wah"></div>
+    <p class="note"><b>SWEEP</b> = LFO (Sine / Triangle / Saw / Square). <b>ENVELOPE</b> follows level, <b>TOUCH</b> kicks on each note, <b>TALK</b> adds a second formant. <b>PEDAL</b> follows CC4 / CC11 / CC1 / the expression jack. The automatic modes need no pedal.</p>
+  </section>
+
+  <section class="panel">
+    <h2>B · Leslie <small>dual-rotor stereo</small></h2>
+    <div class="rotorwrap">
+      <div class="rotor"><div class="blade"></div><div class="blade b2"></div><div class="cap"></div></div>
+      <div class="rotor-text"><span>ROTOR SPEED</span><b id="rotor-hz">— Hz</b>
+        <span id="rotor-mode">&nbsp;</span></div>
+    </div>
+    <div class="grid" id="leslie" style="margin-top:14px"></div>
+    <p class="note">Two rotors with independent motors: an 800 Hz crossover, geometric Doppler and a stereo mic pair. Flip between <b>SLOW</b> and <b>FAST</b>; Ramp scales the spin-up and brake.</p>
+  </section>
+</div>
+
+<div class="stripes"></div>
+
+<div class="two">
+  <section class="panel">
+    <h2>C · Drive &amp; tone</h2>
+    <div class="grid" id="drive"></div>
+    <div class="grid" id="tone" style="margin-top:10px"></div>
+  </section>
+  <section class="panel">
+    <h2>D · Space &amp; system</h2>
+    <div class="grid" id="space"></div>
+    <div class="grid" id="system" style="margin-top:10px"></div>
+  </section>
+</div>
+
+<section class="panel" style="margin-top:14px">
+  <h2>Factory presets <small>funk first</small></h2>
+  <div class="presets" id="presets"></div>
+  <div class="row">
+    <button id="riff" class="hot">Demo riff: off</button>
+    <button id="save">Save rig</button>
+    <button id="reset">Reset FX</button>
+    <button id="panic">Panic</button>
+  </div>
+  <p class="note">Plug a guitar into <b>IN 1</b> and play. No guitar? The device's <b>keys pluck a small demo guitar</b>; press <b>Demo riff</b> (or F6 / K6 / PLAY on the device) to start the hands-free funk line through the same effects. The pluck buttons below do the same thing here.</p>
+  <div class="row" id="pluck"></div>
+</section>
+
+<footer>Built with the VIBE FM SDK &nbsp;·&nbsp; effects first, keys only for the showcase</footer>
+
+<script src="vibe-editor.js"></script>
+<script>
+(async () => {
+  await vibe.ready;
+  const $ = (id) => document.getElementById(id);
+  const NS = 'http://www.w3.org/2000/svg';
+  const curls = $('curls');
+  for (let i = 0; i < 20; i++) {
+    const a = (i / 20) * Math.PI * 2;
+    const c = document.createElementNS(NS, 'circle');
+    c.setAttribute('cx', (60 + Math.cos(a) * 39).toFixed(1));
+    c.setAttribute('cy', (50 + Math.sin(a) * 37).toFixed(1));
+    c.setAttribute('r', i % 2 ? '25' : '23');
+    c.setAttribute('fill', i % 2 ? '#ff8c1a' : '#f2c14e');
+    curls.appendChild(c);
+  }
+  const circle = document.createElementNS(NS, 'circle');
+  circle.setAttribute('cx', '60'); circle.setAttribute('cy', '51');
+  circle.setAttribute('r', '40'); circle.setAttribute('fill', '#ff8c1a');
+  curls.insertBefore(circle, curls.firstChild);
+
+  const byId = new Map(vibe.params.map((p) => [p.id, p]));
+  const ctl = new Map();
+  const P = (id) => byId.get(id);
+
+  function fmt(p, v) {
+    if (p.steps > 1 && p.choices) {
+      const k = Math.round((v - p.min) / ((p.max - p.min) / (p.steps - 1)));
+      return p.choices[Math.max(0, Math.min(p.choices.length - 1, k))] || '';
+    }
+    if (p.unit === 'Hz') return v.toFixed(v >= 100 ? 0 : 1) + ' Hz';
+    if (p.unit === 'dB') return (v > 0 ? '+' : '') + v.toFixed(1) + ' dB';
+    if (p.unit === 'ms') return v.toFixed(0) + ' ms';
+    if (p.unit === 'bpm') return v.toFixed(0) + ' bpm';
+    if (p.unit === 's') return v.toFixed(2) + ' s';
+    return v.toFixed(2);
+  }
+
+  function addControl(host, id) {
+    const p = P(id);
+    if (!p) return;
+    const row = document.createElement('div'); row.className = 'ctl';
+    const label = document.createElement('label'); label.textContent = p.name;
+    const out = document.createElement('output');
+    let input;
+    if (p.steps > 1 && p.choices && p.choices.length) {
+      input = document.createElement('select');
+      p.choices.forEach((c, k) => input.add(new Option(c, String(k))));
+      input.onchange = () => vibe.set(p.i, p.min + (+input.value) * (p.max - p.min) / (p.steps - 1));
+    } else {
+      input = document.createElement('input'); input.type = 'range';
+      input.min = '0'; input.max = '1000'; input.step = '1';
+      input.oninput = () => vibe.set(p.i, p.min + (+input.value) / 1000 * (p.max - p.min));
+    }
+    row.append(label, input, out);
+    $(host).append(row);
+    ctl.set(id, { p, input, out });
+  }
+
+  ['wah_mode','wah_voicing','wah_shape','wah_speed','wah_depth','wah_res',
+   'wah_low','wah_high','wah_attack','wah_release','wah_sens','wah_hold',
+   'wah_drive','wah_mix'].forEach((id) => addControl('wah', id));
+  ['leslie_on','leslie_speed','leslie_ramp','leslie_balance','leslie_depth','leslie_drive']
+    .forEach((id) => addControl('leslie', id));
+  ['drive','gate','comp'].forEach((id) => addControl('drive', id));
+  ['eq_bass','eq_mid','eq_treble'].forEach((id) => addControl('tone', id));
+  ['mod_type','mod_rate','mod_depth','mod_mix','delay_mix','delay_ms','delay_fb',
+   'reverb_mix','reverb_room'].forEach((id) => addControl('space', id));
+  ['master','demo_riff','demo_bpm'].forEach((id) => addControl('system', id));
+
+  const PRESETS = [
+    { name:'FUNK WAH', vals:{ wah_mode:1, wah_speed:2.4, wah_depth:.9, wah_res:5.5,
+      wah_low:330, wah_high:3400, wah_voicing:0, wah_shape:0, wah_sens:.55, wah_hold:120,
+      wah_drive:.2, drive:.22, eq_mid:-2.5, reverb_mix:.08, leslie_on:0 } },
+    { name:'ROTARY', vals:{ wah_mode:0, leslie_on:1, leslie_speed:1, leslie_balance:.5,
+      leslie_depth:.85, leslie_drive:.3, drive:.12, eq_mid:-1, reverb_mix:.15 } },
+    { name:'WAH + ROTARY', vals:{ wah_mode:1, wah_speed:1.8, wah_depth:.75, wah_voicing:1,
+      wah_sens:.45, leslie_on:1, leslie_speed:1, leslie_balance:.55, leslie_depth:.65,
+      drive:.2, wah_drive:.12, delay_mix:.12, reverb_mix:.12 } },
+    { name:'FUNK DUB', vals:{ wah_mode:1, wah_speed:1.2, wah_depth:.6, wah_shape:2,
+      wah_res:4.2, wah_sens:.5, mod_type:2, mod_rate:.35, mod_mix:.35,
+      delay_mix:.35, delay_ms:380, delay_fb:.48, reverb_mix:.22, leslie_on:0 } },
+    { name:'CLEAN', vals:{ wah_mode:0, leslie_on:0, drive:0, comp:0, eq_bass:0, eq_mid:0,
+      eq_treble:0, mod_type:0, reverb_mix:0 } },
+    { name:'TALK BOX', vals:{ wah_mode:4, wah_speed:2.2, wah_depth:.85, wah_res:7,
+      wah_low:450, wah_high:2600, wah_voicing:1, wah_shape:2, wah_drive:.25,
+      leslie_on:0, delay_mix:.12, reverb_mix:.12 } },
+    { name:'BASS WAH', vals:{ wah_mode:2, wah_depth:.9, wah_res:6, wah_low:130,
+      wah_high:1400, wah_voicing:2, wah_sens:.6, wah_hold:180, wah_drive:.15,
+      leslie_on:0, eq_bass:2, drive:.2 } }
+  ];
+  function applyPreset(p) {
+    for (const [id, v] of Object.entries(p.vals)) {
+      const c = ctl.get(id);
+      if (c) vibe.set(c.p.i, v);
+    }
+  }
+  PRESETS.forEach((p, i) => {
+    const b = document.createElement('button');
+    b.textContent = (i + 1) + ' · ' + p.name;
+    b.onclick = () => applyPreset(p);
+    $('presets').append(b);
+  });
+
+  let wahLow = 330, wahHigh = 3400, rotorMode = '';
+  vibe.onValues((values) => {
+    for (const { p, input, out } of ctl.values()) {
+      const v = values[p.i];
+      if (v === undefined) continue;
+      const norm = (v - p.min) / (p.max - p.min || 1);
+      if (p.steps > 1 && p.choices) {
+        const k = Math.round(norm * (p.steps - 1));
+        if (document.activeElement !== input) input.value = String(k);
+      } else if (document.activeElement !== input) {
+        input.value = String(Math.round(norm * 1000));
+      }
+      out.textContent = fmt(p, v);
+    }
+    const modeC = ctl.get('wah_mode');
+    if (modeC && values[modeC.p.i] !== undefined) {
+      const mp = modeC.p;
+      const mk = Math.round((values[mp.i] - mp.min) / (mp.max - mp.min || 1) * (mp.steps - 1));
+      $('wah-mode-label').textContent = mp.choices[Math.max(0, Math.min(mp.choices.length - 1, mk))] || 'WAH';
+    }
+    wahLow = values[ctl.get('wah_low').p.i];
+    wahHigh = values[ctl.get('wah_high').p.i];
+    const sp = values[ctl.get('leslie_speed').p.i];
+    rotorMode = sp < .5 ? 'STOP' : (sp < 1.5 ? 'SLOW' : 'FAST');
+    const on = values[ctl.get('leslie_on').p.i] > .5;
+    $('rotor-mode').textContent = on ? rotorMode : 'OFF';
+    const riffCtl = ctl.get('demo_riff');
+    const riffOn = riffCtl ? values[riffCtl.p.i] > .5 : false;
+    $('riff').textContent = 'Demo riff: ' + (riffOn ? 'on' : 'off');
+    $('riff-pill').textContent = riffOn ? 'demo riff on' : 'demo riff off';
+  });
+
+  vibe.onData((b) => {
+    if (!b || !b.length) return;
+    const text = new TextDecoder().decode(b);
+    $('status').textContent = text;
+    const wm = text.match(/wah (\d+)\s*Hz/);
+    if (wm) {
+      const hz = +wm[1], lo = Math.min(wahLow, wahHigh), hi = Math.max(wahLow, wahHigh);
+      $('wah-hz').textContent = hz + ' Hz';
+      const t = hi > lo ? Math.max(0, Math.min(1, (hz - lo) / (hi - lo))) : .5;
+      $('needle').style.setProperty('--wah-pos', (8 + 84 * t).toFixed(1) + '%');
+    }
+    const rm = text.match(/rotor ([\d.]+)\s*Hz/);
+    if (rm) {
+      const hz = +rm[1];
+      $('rotor-hz').textContent = hz.toFixed(1) + ' Hz';
+      const rotors = document.querySelectorAll('.blade');
+      rotors.forEach((el) => el.style.setProperty('--rotor-time', (hz > .1 ? 1 / hz : 60).toFixed(3) + 's'));
+    }
+  });
+
+  $('riff').onclick = () => {
+    const p = ctl.get('demo_riff').p;
+    vibe.set(p.i, vibe.values[p.i] > .5 ? 0 : 1);
+  };
+  $('save').onclick = () => vibe.send(new Uint8Array([0x21]));
+  $('reset').onclick = () => applyPreset(PRESETS[0]);
+  $('panic').onclick = () => vibe.send(new Uint8Array([0x23]));
+
+  [40, 43, 47, 52, 55, 59].forEach((n) => {
+    const b = document.createElement('button');
+    b.textContent = 'PLUCK ' + n;
+    b.onpointerdown = () => vibe.note(n, .9);
+    b.onpointerup = () => vibe.note(n, 0);
+    b.onpointerleave = () => vibe.note(n, 0);
+    $('pluck').append(b);
+  });
+
+  vibe.send(new Uint8Array([0x20]));
+  setInterval(() => vibe.send(new Uint8Array([0x20])), 3000);
+})();
+</script>
+</body>
+</html>

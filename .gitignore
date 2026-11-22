@@ -1,0 +1,7 @@
+sdk/
+build/
+sdk/build/
+__pycache__/
+*.pyc
+*.wasm
+*.zip
