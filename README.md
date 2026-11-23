@@ -1,5 +1,7 @@
 # VIBE FM — automatic funk effects
 
+<img src="https://github.com/kesi03/wah-wah/raw/master/firmware/wah-wah/icon.png" alt="drawing" style="width:200px;"/>
+
 A 70s funk effects pedal for VIBE FM. It is an **effect first**: guitar/bass enters on **IN 1** and runs through the whole chain. The wah sweeps itself, follows your picking, talks, or tracks a real expression pedal — the Leslie spins itself. No pedal is required for the automatic modes.
 
 For testing without an instrument, the 25 keys pluck a tiny built-in Karplus-Strong guitar. The hands-free funk riff starts only when you press the DEMO button (F6 / K6 / PLAY, or the editor's Demo riff button). Those keys are only a showcase; the same FX process the live input.
@@ -39,7 +41,7 @@ node sdk/tools/wasmtest.mjs sdk/build/wah-wah.wasm script.json out/
 python tools/make_icon.py        # regenerate the afro icon if you change the motif
 ```
 
-On Windows, `vibe-check` may need `HOME` set (for example `$env:HOME = 'C:\Users\keste'` before running it). If `python3` resolves to the Microsoft Store alias, the WASM still builds; pack the zip with your installed Python instead:
+On Windows, `vibe-check` may need `HOME` set (for example `$env:HOME = 'C:\Users\{{name}}'` before running it). If `python3` resolves to the Microsoft Store alias, the WASM still builds; pack the zip with your installed Python instead:
 
 ```sh
 python -c "import zipfile,pathlib; b=pathlib.Path('sdk/build'); z=zipfile.ZipFile(b/'wah-wah.zip','w',zipfile.ZIP_DEFLATED); [z.write(p,p.relative_to(b)) for p in sorted(b.rglob('wah-wah*')) if p.is_file() and p.suffix in ('.wasm','.json','.png')]; [z.write(p,p.relative_to(b)) for p in sorted((b/'wah-wah.editor').rglob('*')) if p.is_file()]; z.close()"
