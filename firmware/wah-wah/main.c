@@ -135,25 +135,33 @@ static const vibe_param PARAMS[P_COUNT] = {
 };
 #undef PV
 
+/* Standard-editor mapping: WAH stays its own tab, while the rest of the
+ * pedal's rack - Leslie, dynamics, modulation, delay and reverb - lives on
+ * the FX tab. Parameter ids are unchanged. */
 static const char *const GROUPS[P_COUNT] = {
-  "A · WAH", "A · WAH", "A · WAH", "A · WAH", "A · WAH", "A · WAH",
-  "A · WAH", "A · WAH", "A · WAH",
-  "B · LESLIE", "B · LESLIE", "B · LESLIE", "B · LESLIE", "B · LESLIE", "B · LESLIE",
-  "C · DRIVE", "C · DRIVE", "C · DRIVE",
-  "D · TONE", "D · TONE", "D · TONE",
-  "E · SPACE", "E · SPACE", "E · SPACE", "E · SPACE", "E · SPACE", "E · SPACE",
-  "E · SPACE", "E · SPACE", "E · SPACE",
-  "F · SYSTEM", "F · SYSTEM", "F · SYSTEM",
-  "A · WAH", "A · WAH", "A · WAH", "A · WAH", "A · WAH"
+  "WAH · WAH", "WAH · WAH", "WAH · WAH", "WAH · WAH", "WAH · WAH", "WAH · WAH",
+  "WAH · WAH", "WAH · WAH", "WAH · WAH",
+  "FX · LESLIE", "FX · LESLIE", "FX · LESLIE", "FX · LESLIE", "FX · LESLIE", "FX · LESLIE",
+  "FX · DYNAMICS", "FX · DYNAMICS", "FX · DYNAMICS",
+  "TONE · EQ", "TONE · EQ", "TONE · EQ",
+  "FX · MOD FX", "FX · MOD FX", "FX · MOD FX", "FX · MOD FX",
+  "FX · DELAY", "FX · DELAY", "FX · DELAY",
+  "FX · REVERB", "FX · REVERB",
+  "SYSTEM · OUTPUT",
+  "SYSTEM · DEMO", "SYSTEM · DEMO",
+  "WAH · WAH", "WAH · WAH", "WAH · WAH", "WAH · WAH", "WAH · WAH"
 };
 
 static const vibe_card CARDS[] = {
-  { "WAH", 11, "Sweep, envelope, touch, talk or a real pedal" },
-  { "LESLIE", 6, "Dual-rotor stereo Leslie with independent motors" },
-  { "DRIVE", 4, "Gate, compressor and grit" },
-  { "TONE", 4, "Three-band EQ" },
-  { "SPACE", 4, "Modulation, delay and reverb" },
-  { "SYSTEM", 12, "Level and the built-in demo" }
+  { "WAH",      11, "Sweep, envelope, touch, talk or a real pedal" },
+  { "DYNAMICS",  4, "Gate, compressor and grit" },
+  { "MOD FX",    4, "Chorus, flanger and phaser" },
+  { "DELAY",     6, "Stereo ping-pong echo" },
+  { "REVERB",    6, "Room reverb: mix and room size" },
+  { "LESLIE",    6, "Dual-rotor stereo Leslie with independent motors" },
+  { "EQ",        4, "Three-band EQ" },
+  { "OUTPUT",    4, "Overall output level" },
+  { "DEMO",      6, "Hands-free funk riff and tempo" }
 };
 
 typedef struct {
@@ -896,11 +904,10 @@ void vibe_on_init(float sample_rate)
   vibe_param_groups(GROUPS);
   vibe_editor_cards(CARDS, (int)(sizeof CARDS / sizeof CARDS[0]));
   vibe_editor_accent(0xFF8C1A);
-  vibe_editor_tab_color("A", 0xFF8C1A);
-  vibe_editor_tab_color("B", 0xF2C14E);
-  vibe_editor_tab_color("C", 0xD95B3F);
-  vibe_editor_tab_color("D", 0x8FA44B);
-  vibe_editor_tab_color("E", 0x5AB6FF);
+  vibe_editor_tab_color("WAH", 0xFF8C1A);
+  vibe_editor_tab_color("FX", 0x5AB6FF);
+  vibe_editor_tab_color("TONE", 0x8FA44B);
+  vibe_editor_tab_color("SYSTEM", 0xF3E5C8);
   vibe_param_help(P_WAH_MODE, "SWEEP: LFO. ENVELOPE: follows level. TOUCH: kick per note. TALK: two formants. PEDAL: CC4 / CC11 / expression jack.");
   vibe_param_help(P_WAH_VOICING, "CRYBABY is tight and nasal, VOX is broad and vocal, BASS sweeps low with a sharper resonant peak.");
   vibe_param_help(P_WAH_SENS, "Envelope / touch sensitivity: low = only strong picking opens the wah.");

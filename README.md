@@ -106,41 +106,41 @@ Editor byte commands: `0x20` status request, `0x21` save rig, `0x22` reset to `F
 
 ## Parameters
 
-All parameters use stable string ids and are stored/transferred as `value × 1000`. Groups A–E appear as editor tabs; F is system. The five new wah parameters were **appended** at indices 33–37, so existing DAW automation keeps its id/index. Rigs saved with the original 34 parameters still load; the new controls stay at their defaults. `leslie_ramp` still has its original id/range, but now scales the dual motor spin-up/brake times (1.5 = the BAR-FLY baseline).
+All parameters use stable string ids and are stored/transferred as `value × 1000`. The standard Editor has four tabs: WAH, FX (Leslie, dynamics, modulation, delay and reverb), TONE and SYSTEM. The five new wah parameters were **appended** at indices 33–37, so existing DAW automation keeps its id/index. Rigs saved with the original 34 parameters still load; the new controls stay at their defaults. `leslie_ramp` still has its original id/range, but now scales the dual motor spin-up/brake times (1.5 = the BAR-FLY baseline).
 
 | Group | Parameter | Range | Default |
 | --- | --- | --- | --- |
-| A · WAH | `wah_mode` | 0–5 (off/sweep/envelope/touch/talk/pedal) | 1 |
-| A · WAH | `wah_speed` | 0.1–10 Hz | 2.4 |
-| A · WAH | `wah_depth` | 0–1 | 0.9 |
-| A · WAH | `wah_res` | 0.7–12 | 5.5 |
-| A · WAH | `wah_low` / `wah_high` | 100–1500 / 800–7000 Hz | 330 / 3400 |
-| A · WAH | `wah_attack` / `wah_release` | 1–200 / 20–1000 ms | 12 / 180 |
-| A · WAH | `wah_mix` | 0–1 | 0.9 |
-| A · WAH | `wah_voicing` | 0–2 (CRYBABY/VOX/BASS) | 0 |
-| A · WAH | `wah_shape` | 0–3 (SINE/TRIANGLE/SAW/SQUARE) | 0 |
-| A · WAH | `wah_sens` | 0–1 | 0.55 |
-| A · WAH | `wah_hold` | 0–500 ms | 120 |
-| A · WAH | `wah_drive` | 0–1 | 0.2 |
-| B · LESLIE | `leslie_on` | 0/1 | 0 |
-| B · LESLIE | `leslie_speed` | 0–2 (stop/slow/fast) | 1 |
-| B · LESLIE | `leslie_ramp` | 0.05–10 s | 1.5 |
-| B · LESLIE | `leslie_balance` | 0–1 (bass ↔ horn) | 0.55 |
-| B · LESLIE | `leslie_depth` | 0–1 | 0.75 |
-| B · LESLIE | `leslie_drive` | 0–1 | 0.25 |
-| C · DRIVE | `drive` | 0–1 | 0.22 |
-| C · DRIVE | `gate` | -80–-10 dB | -70 |
-| C · DRIVE | `comp` | 0–1 | 0.3 |
-| D · TONE | `eq_bass` / `eq_mid` / `eq_treble` | -18–18 dB | +1.5 / -2.5 / +3 |
-| E · SPACE | `mod_type` | 0–3 (off/chorus/flanger/phaser) | 0 |
-| E · SPACE | `mod_rate` / `mod_depth` / `mod_mix` | 0–1 | 0.35 / 0.6 / 0.25 |
-| E · SPACE | `delay_mix` | 0–1 | 0 |
-| E · SPACE | `delay_ms` | 0–1400 ms | 375 |
-| E · SPACE | `delay_fb` | 0–0.9 | 0.35 |
-| E · SPACE | `reverb_mix` / `reverb_room` | 0–1 | 0.08 / 0.45 |
-| F · SYSTEM | `master` | 0–1 | 0.8 |
-| F · SYSTEM | `demo_riff` | 0/1 | 0 |
-| F · SYSTEM | `demo_bpm` | 60–180 bpm | 104 |
+| WAH · WAH | `wah_mode` | 0–5 (off/sweep/envelope/touch/talk/pedal) | 1 |
+| WAH · WAH | `wah_speed` | 0.1–10 Hz | 2.4 |
+| WAH · WAH | `wah_depth` | 0–1 | 0.9 |
+| WAH · WAH | `wah_res` | 0.7–12 | 5.5 |
+| WAH · WAH | `wah_low` / `wah_high` | 100–1500 / 800–7000 Hz | 330 / 3400 |
+| WAH · WAH | `wah_attack` / `wah_release` | 1–200 / 20–1000 ms | 12 / 180 |
+| WAH · WAH | `wah_mix` | 0–1 | 0.9 |
+| WAH · WAH | `wah_voicing` | 0–2 (CRYBABY/VOX/BASS) | 0 |
+| WAH · WAH | `wah_shape` | 0–3 (SINE/TRIANGLE/SAW/SQUARE) | 0 |
+| WAH · WAH | `wah_sens` | 0–1 | 0.55 |
+| WAH · WAH | `wah_hold` | 0–500 ms | 120 |
+| WAH · WAH | `wah_drive` | 0–1 | 0.2 |
+| FX · LESLIE | `leslie_on` | 0/1 | 0 |
+| FX · LESLIE | `leslie_speed` | 0–2 (stop/slow/fast) | 1 |
+| FX · LESLIE | `leslie_ramp` | 0.05–10 s | 1.5 |
+| FX · LESLIE | `leslie_balance` | 0–1 (bass ↔ horn) | 0.55 |
+| FX · LESLIE | `leslie_depth` | 0–1 | 0.75 |
+| FX · LESLIE | `leslie_drive` | 0–1 | 0.25 |
+| FX · DYNAMICS | `drive` | 0–1 | 0.22 |
+| FX · DYNAMICS | `gate` | -80–-10 dB | -70 |
+| FX · DYNAMICS | `comp` | 0–1 | 0.3 |
+| TONE · EQ | `eq_bass` / `eq_mid` / `eq_treble` | -18–18 dB | +1.5 / -2.5 / +3 |
+| FX · MOD FX | `mod_type` | 0–3 (off/chorus/flanger/phaser) | 0 |
+| FX · MOD FX | `mod_rate` / `mod_depth` / `mod_mix` | 0–1 | 0.35 / 0.6 / 0.25 |
+| FX · DELAY | `delay_mix` | 0–1 | 0 |
+| FX · DELAY | `delay_ms` | 0–1400 ms | 375 |
+| FX · DELAY | `delay_fb` | 0–0.9 | 0.35 |
+| FX · REVERB | `reverb_mix` / `reverb_room` | 0–1 | 0.08 / 0.45 |
+| SYSTEM · OUTPUT | `master` | 0–1 | 0.8 |
+| SYSTEM · DEMO | `demo_riff` | 0/1 | 0 |
+| SYSTEM · DEMO | `demo_bpm` | 60–180 bpm | 104 |
 
 ## Status
 
