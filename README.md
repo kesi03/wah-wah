@@ -1,6 +1,6 @@
 # VIBE FM — automatic funk effects
 
-<img src="https://github.com/kesi03/wah-wah/raw/main/firmware/bar-fly/icon.png" alt="drawing" style="width:200px;"/>
+<img src="https://github.com/kesi03/wah-wah/raw/main/firmware/wah-wah/icon.png" alt="drawing" style="width:200px;"/>
 
 A 70s funk effects pedal for VIBE FM. It is an **effect first**: guitar/bass enters on **IN 1** and runs through the whole chain. The wah sweeps itself, follows your picking, talks, or tracks a real expression pedal — the Leslie spins itself. No pedal is required for the automatic modes.
 
